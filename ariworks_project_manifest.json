@@ -1,0 +1,25 @@
+{
+  "projects": [
+    {
+      "title": "Nixel",
+      "pill": "game engine",
+      "description": "A custom game engine built from the ground up — Vulkan rendering, real-time lighting, and a five-year vision for something special.",
+      "in_dev": true,
+      "link": "https://github.com/ariworks/nixel"
+    },
+    {
+      "title": "untitled world",
+      "pill": "exploration game",
+      "description": "An emotional, story-driven wander through imaginary liminal spaces — the kind of places that only exist between memories.",
+      "in_dev": true,
+      "link": "#"
+    },
+    {
+      "title": "dev utilities",
+      "pill": "tooling",
+      "description": "A growing collection of small, opinionated tools we made to scratch our own itches. probably useful for you too.",
+      "in_dev": false,
+      "link": "#"
+    }
+  ]
+}

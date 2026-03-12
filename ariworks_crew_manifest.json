@@ -1,0 +1,20 @@
+{
+  "crew": [
+    {
+      "name": "Katie",
+      "title": "founder · engineer",
+      "description": "makes engines, tools, and the occasional chaotic late-night commit. keeps the lights on and the ideas wild.",
+      "icon": "🌸",
+      "link": "/portfolio",
+      "link_label": "visit portfolio"
+    },
+    {
+      "name": "Poime",
+      "title": "crew member",
+      "description": "the page is theirs to decorate. check out whatever they've cooked up on the other side of that link.",
+      "icon": "🌙",
+      "link": "https://poime.example.com",
+      "link_label": "visit their page"
+    }
+  ]
+}
