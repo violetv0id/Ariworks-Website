@@ -89,17 +89,69 @@
       color:inherit;
     }
 
-    /* background image with parallax-ready transform */
+    /*
+     * ── banner background media container ──
+     *
+     * Supports four banner_type values in the manifest:
+     *
+     *   "image"   — banner_src: path to an image file
+     *               <img class="banner-media"> fills the container
+     *
+     *   "video"   — banner_src: path to a video file (no audio used)
+     *               <video muted loop autoplay playsinline> fills the container
+     *
+     *   "css"     — banner_css: a CSS string injected into a <style> tag
+     *               banner_class: class name(s) applied to the inner div
+     *               Use this for pure CSS keyframe animations, gradients, etc.
+     *               The inner div gets class "banner-css-anim" + your banner_class.
+     *
+     *   "canvas"  — banner_canvas_fn: name of a globally-defined JS function
+     *               The function receives (canvas, ctx, projectData) and should
+     *               set up its own requestAnimationFrame loop.
+     *               Define your canvas draw functions in a <script> before
+     *               ariworks_project_manifest.json is fetched, or inline in
+     *               banner_canvas_setup (a JS string that is eval'd once).
+     *
+     * Fallback: if banner_type is missing or unrecognised, a dark gradient
+     * is rendered instead.
+     */
     .banner-bg {
-      position:absolute;inset:-8%;
-      background-size:cover;
-      background-position:center;
-      background-repeat:no-repeat;
+      position:absolute;
+      inset:-8%;
+      overflow:hidden;
+      background:linear-gradient(135deg,#1a1228,#0f1a2e); /* fallback */
       transition:transform .7s cubic-bezier(.23,1,.32,1);
-      /* fallback gradient if no image */
-      background-color:var(--bg2);
     }
     .project-banner:hover .banner-bg { transform:scale(1.04); }
+
+    /* static image */
+    .banner-bg img.banner-media {
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;object-position:center;
+      display:block;
+    }
+
+    /* muted looping video */
+    .banner-bg video.banner-media {
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;object-position:center;
+      display:block;
+    }
+
+    /* canvas animation */
+    .banner-bg canvas.banner-media {
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      display:block;
+    }
+
+    /* css animation host div — your injected CSS targets .banner-css-anim + banner_class */
+    .banner-bg .banner-css-anim {
+      position:absolute;inset:0;
+      width:100%;height:100%;
+    }
 
     /* dark overlay, accent tint at bottom */
     .banner-overlay {
@@ -141,12 +193,10 @@
       object-fit:contain;
       object-position:left bottom;
       filter:drop-shadow(0 2px 12px rgba(0,0,0,0.6));
-      /* if image fails to load, hide gracefully */
       opacity:1;
       transition:opacity .3s;
     }
     .banner-logo-fallback {
-      /* shown when no logo image — just the title text */
       font-family:'Syne',sans-serif;
       font-weight:800;
       font-size:clamp(2rem,5vw,3.5rem);
@@ -331,6 +381,109 @@ function hexGlow(hex, alpha=0.18){
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+// ── banner background media builder ──
+//
+// Reads `banner_type` from each project entry and returns a fully constructed
+// DOM element (or null for a plain fallback gradient) to inject into .banner-bg.
+//
+// Manifest fields per type:
+//
+//   banner_type: "image"
+//     banner_src  — path/URL to the image file
+//
+//   banner_type: "video"
+//     banner_src  — path/URL to the video file (plays muted, looped, no controls)
+//
+//   banner_type: "css"
+//     banner_css        — a CSS string injected once into a <style> tag in <head>
+//                         Target your animation using `.banner-css-anim.YOUR_CLASS`
+//     banner_class      — class name(s) added to the inner div alongside
+//                         "banner-css-anim" so your CSS rules can target it
+//
+//   banner_type: "canvas"
+//     banner_canvas_fn  — name of a function defined on window that receives
+//                         (canvasEl, ctx, projectData) and starts its own
+//                         rAF draw loop. Define these functions before the
+//                         manifest fetch, or use banner_canvas_setup below.
+//     banner_canvas_setup — (optional) a JS string that is eval'd once before
+//                           the canvas is handed to banner_canvas_fn. Useful
+//                           for defining the draw function inline in the manifest
+//                           without a separate script file.
+//
+// Fallback (banner_type missing / unrecognised):
+//   Renders the dark gradient already set on .banner-bg via CSS.
+//   Optionally honour the legacy `banner_image` field for back-compat.
+//
+function buildBannerMedia(p) {
+  const type = p.banner_type || (p.banner_image ? 'image' : null);
+
+  if (type === 'image') {
+    const src = p.banner_src || p.banner_image; // back-compat with old field
+    if (!src) return null;
+    const img = document.createElement('img');
+    img.className = 'banner-media';
+    img.src = src;
+    img.alt = '';
+    img.loading = 'lazy';
+    return img;
+  }
+
+  if (type === 'video') {
+    if (!p.banner_src) return null;
+    const vid = document.createElement('video');
+    vid.className = 'banner-media';
+    vid.src = p.banner_src;
+    vid.muted = true;
+    vid.loop = true;
+    vid.autoplay = true;
+    vid.playsInline = true;
+    vid.setAttribute('playsinline', '');
+    vid.setAttribute('muted', '');
+    return vid;
+  }
+
+  if (type === 'css') {
+    // Inject the CSS string once (guard against duplicates via data attribute)
+    if (p.banner_css) {
+      const styleId = 'banner-css-' + (p.title || '').replace(/\W/g,'_');
+      if (!document.getElementById(styleId)) {
+        const styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        styleEl.textContent = p.banner_css;
+        document.head.appendChild(styleEl);
+      }
+    }
+    const div = document.createElement('div');
+    div.className = ['banner-css-anim', p.banner_class || ''].join(' ').trim();
+    return div;
+  }
+
+  if (type === 'canvas') {
+    // Optionally eval a setup string to define the draw function on window
+    if (p.banner_canvas_setup) {
+      try { eval(p.banner_canvas_setup); } // eslint-disable-line no-eval
+      catch(e) { console.error('banner_canvas_setup eval error for', p.title, e); }
+    }
+    const c = document.createElement('canvas');
+    c.className = 'banner-media';
+    // Defer the draw call until the canvas is in the DOM and sized
+    requestAnimationFrame(() => {
+      c.width  = c.offsetWidth  || c.parentElement?.offsetWidth  || 1280;
+      c.height = c.offsetHeight || c.parentElement?.offsetHeight || 680;
+      const fn = window[p.banner_canvas_fn];
+      if (typeof fn === 'function') {
+        fn(c, c.getContext('2d'), p);
+      } else {
+        console.warn(`banner_canvas_fn "${p.banner_canvas_fn}" not found on window`);
+      }
+    });
+    return c;
+  }
+
+  // Fallback: null → .banner-bg CSS gradient shows through
+  return null;
+}
+
 // ── load project banners ──
 async function loadBanners(){
   const container=document.getElementById('banners-container');
@@ -347,11 +500,6 @@ async function loadBanners(){
       banner.style.setProperty('--banner-accent', accent);
       banner.style.setProperty('--banner-accent-glow', glow);
 
-      // bg image inline style
-      const bgStyle=p.banner_image
-        ? `background-image:url('${p.banner_image}');`
-        : `background:linear-gradient(135deg,#1a1228,#0f1a2e);`;
-
       // logo: try img, fallback to text title
       const logoHtml=p.logo_image
         ? `<img class="banner-logo" src="${p.logo_image}" alt="${p.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`
@@ -360,7 +508,7 @@ async function loadBanners(){
 
       banner.innerHTML=`
         <div class="banner-topline"></div>
-        <div class="banner-bg" style="${bgStyle}"></div>
+        <div class="banner-bg"></div>
         <div class="banner-overlay"></div>
         <div class="banner-content">
           <div class="banner-left">
@@ -376,6 +524,12 @@ async function loadBanners(){
             <span class="banner-right-arrow">↗</span>
           </div>
         </div>`;
+
+      // Inject the media element into .banner-bg
+      const mediaEl = buildBannerMedia(p);
+      if (mediaEl) {
+        banner.querySelector('.banner-bg').appendChild(mediaEl);
+      }
 
       container.appendChild(banner);
       if(i < data.projects.length-1){
