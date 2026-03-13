@@ -6,7 +6,8 @@
       "description": "A custom game engine built from the ground up — OpenGL rendering, real-time lighting, and a five-year vision for something special.",
       "in_dev": true,
       "link": "https://violetv0id.github.io/lunark.github.io/limeko.html",
-      "banner_image": "Art/limeko-banner.png",
+      "banner_type": "video",
+      "banner_src": "Art/limeko-banner.mp4",
       "logo_image": "Art/limeko-logo.png",
       "accent_color": "#6bcfff"
     }
