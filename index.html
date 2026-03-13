@@ -196,6 +196,17 @@
       opacity:1;
       transition:opacity .3s;
     }
+    .banner-title-text {
+      font-family:'Syne',sans-serif;
+      font-weight:700;
+      font-size:clamp(1rem,2.5vw,1.4rem);
+      letter-spacing:-0.02em;
+      color:var(--text);
+      opacity:0.85;
+      margin-top:6px;
+      display:block;
+      text-shadow:0 2px 12px rgba(0,0,0,0.5);
+    }
     .banner-logo-fallback {
       font-family:'Syne',sans-serif;
       font-weight:800;
@@ -339,12 +350,12 @@
     <li><a href="#">twitter</a></li>
     <li><a href="#">discord</a></li>
     <li><a href="#">itch.io</a></li>
-    <li><a href="mailto:hello@ariworks.dev">email</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#4028252c2c2f00213229372f322b336e242536">email</a></li>
   </ul>
   <p class="footer-copy">© 2026 ariworks_ — all rights reserved & vibes preserved</p>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── cursor ──
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let mx=0,my=0,rx=0,ry=0;
@@ -502,8 +513,8 @@ async function loadBanners(){
 
       // logo: try img, fallback to text title
       const logoHtml=p.logo_image
-        ? `<img class="banner-logo" src="${p.logo_image}" alt="${p.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`
-          +`<span class="banner-logo-fallback" style="display:none">${p.title}</span>`
+        ? `<img class="banner-logo" src="${p.logo_image}" alt="${p.title}">`
+          +`<span class="banner-title-text">${p.title}</span>`
         : `<span class="banner-logo-fallback">${p.title}</span>`;
 
       banner.innerHTML=`
@@ -541,12 +552,4 @@ async function loadBanners(){
       bindCursor(banner);
     });
   } catch(err){
-    container.innerHTML='<p style="color:var(--muted);padding:48px;font-family:DM Mono,monospace;font-size:.9rem">couldn\'t load projects — check ariworks_project_manifest.json</p>';
-    console.error(err);
-  }
-}
-
-loadBanners();
-</script>
-</body>
-</html>
+    container.innerHTML='<p style="color:var(--muted);padding:48px;font-family:DM Mono,monospace;font-size:.
