@@ -1,11 +1,11 @@
 {
   "posts": [
     {
-      "title": "starting from scratch: why we're making out own engine.",
+      "title": "starting from scratch: why we're making our own engine.",
       "date": "COMING SOON",
       "tag": "Limeko",
       "description": "what caused us to make our own engine, why we're doing it the way we are, and where it'll go.",
-      "file": "#",
+      "file": "blogs",
       "featured": true
     }
   ]
