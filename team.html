@@ -155,11 +155,18 @@ async function load(){
       const sp=SPARKLES[i%SPARKLES.length];
       const card=document.createElement('a');
       card.href=m.link||'#';card.className='team-card reveal';card.dataset.theme=String(i%3);
-      const avatarContent=m.avatar?`<img src="${m.avatar}" alt="${m.name}" loading="lazy" onerror="this.parentElement.textContent='${m.icon}'">`:`${m.icon}`;
-      card.innerHTML=`<span class="card-sparkle" style="top:${sp[0].t};right:${sp[0].r};--sx:${sp[0].sx};--sy:${sp[0].sy};animation-delay:${sp[0].d}">${sp[0].g}</span><span class="card-sparkle" style="top:${sp[1].t};right:${sp[1].r};--sx:${sp[1].sx};--sy:${sp[1].sy};animation-delay:${sp[1].d}">${sp[1].g}</span><div class="card-avatar">${avatarContent}</div><div class="card-name">${m.name}</div><span class="card-role-pill">${m.title}</span><p class="card-bio">${m.description}</p><div class="card-link-hint">${m.link_label} ↗</div>`;
+      card.innerHTML=`<span class="card-sparkle" style="top:${sp[0].t};right:${sp[0].r};--sx:${sp[0].sx};--sy:${sp[0].sy};animation-delay:${sp[0].d}">${sp[0].g}</span><span class="card-sparkle" style="top:${sp[1].t};right:${sp[1].r};--sx:${sp[1].sx};--sy:${sp[1].sy};animation-delay:${sp[1].d}">${sp[1].g}</span><div class="card-avatar"></div><div class="card-name">${m.name}</div><span class="card-role-pill">${m.title}</span><p class="card-bio">${m.description}</p><div class="card-link-hint">${m.link_label} ↗</div>`;
+      const avatarEl=card.querySelector('.card-avatar');
+      if(m.avatar){const img=document.createElement('img');img.src=m.avatar;img.alt=m.name;img.loading='lazy';img.onerror=()=>{avatarEl.textContent=m.icon;};avatarEl.appendChild(img);}else{avatarEl.textContent=m.icon;}
       grid.appendChild(card);ro.observe(card);bindCursor(card);
     });
     const open=document.createElement('div');
     open.className='team-card open reveal';
     open.innerHTML='<div class="open-icon">✦</div><p>maybe this is you?<br>ariworks is always growing.</p>';
-    grid.appendChild(open);ro.ob
+    grid.appendChild(open);ro.observe(open);
+  }catch(e){grid.innerHTML='<p style="color:var(--muted);font-size:.9rem">couldn\'t load crew.</p>';}
+}
+load();
+</script>
+</body>
+</html>
