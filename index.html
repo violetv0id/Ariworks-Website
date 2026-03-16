@@ -27,7 +27,7 @@
     body { background:var(--bg); color:var(--text); font-family:'Onest',sans-serif; font-weight:300; overflow-x:hidden; cursor:none; }
 
     /* cursor */
-    #cursor { position:fixed;z-index:9999;width:12px;height:12px;background:var(--accent2);border-radius:50%;pointer-events:none;top:0;left:0;transition:width .15s,height .15s;will-change:transform; }
+    #cursor { position:fixed;z-index:9999;width:12px;height:12px;background:var(--accent2);border-radius:50%;pointer-events:none;top:0;left:0;transition:width .15s,height .15s;mix-blend-mode:difference;will-change:transform; }
     #cursor-ring { position:fixed;z-index:9998;width:36px;height:36px;border:1.5px solid var(--accent2);border-radius:50%;pointer-events:none;top:0;left:0;transition:width .35s cubic-bezier(.23,1,.32,1),height .35s cubic-bezier(.23,1,.32,1),opacity .3s;opacity:0.5;will-change:transform; }
     body:hover #cursor-ring { opacity:1; }
     
