@@ -199,14 +199,14 @@ nav{padding:10px 18px;gap:18px}
     <li><a href="https://github.com/Ariworks-Entertainment/">github</a></li>
     <!-- <li><a href="#">twitter</a></li> -->
     <li><a href="https://discord.gg/ADW466aatQ/">discord</a></li>
-    <li><a href="/cdn-cgi/l/email-protection#54373b3a203537201435263d233b263f277a2c2d2e">email</a></li>
+    <li><a href="mailto:contact@ariworks.xyz">email</a></li>
     <li><a href="https://ko-fi.com/ariworks_entertainment">ko-fi</a></li>
   </ul>
   <div class="footer-divider"></div>
   <span class="footer-copy">© 2026 ariworks_ — all rights reserved</span>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── cursor ──
 const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let mx=window.innerWidth/2,my=window.innerHeight/2,rx=mx,ry=my;
@@ -350,4 +350,11 @@ async function loadBanners(){
       bindCursor(banner);
     });
   } catch(err){
-    container.innerHTML='<p style="color:var(--muted);padding:48px;font-family:DM Mono,monospace;font-siz
+    container.innerHTML='<p style="color:var(--muted);padding:48px;font-family:DM Mono,monospace;font-size:.9rem">couldn\'t load projects — check ariworks_project_manifest.json</p>';
+    console.error(err);
+  }
+}
+loadBanners();
+</script>
+</body>
+</html>
